@@ -83,41 +83,69 @@ main(List<String> args) async {
 
     test('at least one argument must be provided', () async {
       // Should throw error 64.
-      var result = await runDart('a', 'tool/build.dart',
-          args: ['run', '--output', 'build']);
-      expect(result.exitCode, ExitCode.usage.code,
-          reason: result.stderr as String);
+      var result = await runDart('a', 'tool/build.dart', args: [
+        'run',
+        '--output',
+        'build',
+      ]);
+      expect(
+        result.exitCode,
+        ExitCode.usage.code,
+        reason: result.stderr as String,
+      );
       expect(result.stdout, contains('Must specify an executable to run.'));
       expect(result.stdout, contains('Usage: build_runner run'));
     });
 
     test('extension must be .dart', () async {
       // Should throw error 64.
-      var result = await runDart('a', 'tool/build.dart',
-          args: ['run', 'bin/main.txt.copy', '--output', 'build']);
-      expect(result.exitCode, ExitCode.usage.code,
-          reason: result.stderr as String);
-      expect(result.stdout,
-          contains('is not a valid Dart file and cannot be run in the VM.'));
+      var result = await runDart('a', 'tool/build.dart', args: [
+        'run',
+        'bin/main.txt.copy',
+        '--output',
+        'build',
+      ]);
+      expect(
+        result.exitCode,
+        ExitCode.usage.code,
+        reason: result.stderr as String,
+      );
+      expect(
+        result.stdout,
+        contains('is not a valid Dart file and cannot be run in the VM.'),
+      );
     });
 
     test('target file must actually exist', () async {
       // Should throw error 64.
-      var result = await runDart('a', 'tool/build.dart',
-          args: ['run', 'bin/nonexistent.dart', '--output', 'build']);
-      expect(result.exitCode, ExitCode.ioError.code,
-          reason: result.stderr as String);
+      var result = await runDart('a', 'tool/build.dart', args: [
+        'run',
+        'bin/nonexistent.dart',
+        '--output',
+        'build',
+      ]);
       expect(
-          result.stdout,
-          contains(
-              'Could not spawn isolate. Ensure that your file is in a valid '
-              'directory'));
+        result.exitCode,
+        ExitCode.ioError.code,
+        reason: result.stderr as String,
+      );
+      expect(
+        result.stdout,
+        contains(
+          'Could not spawn isolate. Ensure that your file is in a valid '
+          'directory',
+        ),
+      );
     });
 
     test('runs the built version of the desired script', () async {
       // Run the generated script, and examine its output.
-      var result = await runDart('a', 'tool/build.dart',
-          args: ['run', 'bin/main.copy.dart', '--output', 'build']);
+      var result = await runDart('a', 'tool/build.dart', args: [
+        'run',
+        'bin/main.copy.dart',
+        '--output',
+        'build',
+      ]);
       var lastLine =
           const LineSplitter().convert(result.stdout as String).last.trim();
       expect(result.exitCode, 0, reason: result.stderr as String);
@@ -126,8 +154,10 @@ main(List<String> args) async {
 
     test('runs even if no output directory is given', () async {
       // Verify that the script runs (it'll be generated into a temp dir)
-      var result = await runDart('a', 'tool/build.dart',
-          args: ['run', 'bin/main.copy.dart']);
+      var result = await runDart('a', 'tool/build.dart', args: [
+        'run',
+        'bin/main.copy.dart',
+      ]);
       var lastLine =
           const LineSplitter().convert(result.stdout as String).last.trim();
       expect(result.exitCode, 0, reason: result.stderr as String);
@@ -144,7 +174,7 @@ main(List<String> args) async {
         '--',
         'a',
         'b',
-        'c'
+        'c',
       ]);
       var lastLine =
           const LineSplitter().convert(result.stdout as String).last.trim();
@@ -160,7 +190,7 @@ main(List<String> args) async {
         '--output',
         'build',
         '--',
-        'throw'
+        'throw',
       ]);
       expect(result.exitCode, 1, reason: result.stderr as String);
       expect(result.stdout, contains('Unhandled error from script:'));
@@ -177,7 +207,7 @@ main(List<String> args) async {
         '--output',
         'build',
         '--',
-        'throw'
+        'throw',
       ]);
       expect(result.exitCode, 1, reason: result.stderr as String);
       expect(result.stdout, contains('Unhandled error from script:'));

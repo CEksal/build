@@ -13,8 +13,9 @@ import 'src/build_asset_uri_resolver.dart';
 Builder transitiveDigestsBuilder(_) => _TransitiveDigestsBuilder();
 
 PostProcessBuilder transitiveDigestCleanup(BuilderOptions options) =>
-    FileDeletingBuilder([transitiveDigestExtension],
-        isEnabled: options.config['enabled'] as bool? ?? true);
+    FileDeletingBuilder([
+      transitiveDigestExtension,
+    ], isEnabled: options.config['enabled'] as bool? ?? true);
 
 /// Computes a digest comprised of the current libraries digest as well as its
 /// transitive dependency digests, and writes it to a file next to the library.
@@ -43,11 +44,13 @@ class _TransitiveDigestsBuilder extends Builder {
 
       // We warn here but do not fail, the downside is slower builds.
       if (!(await buildStep.canRead(next))) {
-        log.warning('''
+        log.warning(
+          '''
 Unable to read asset, could not compute transitive deps: $next
 
 This may cause less efficient builds, see the following doc for help:
-https://github.com/dart-lang/build/blob/master/docs/faq.md#unable-to-read-asset-could-not-compute-transitive-deps''');
+https://github.com/dart-lang/build/blob/master/docs/faq.md#unable-to-read-asset-could-not-compute-transitive-deps''',
+        );
         return;
       }
 
@@ -64,12 +67,13 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#unable-to-read-asset-
     }
     byteSink.close();
     await buildStep.writeAsBytes(
-        buildStep.inputId.addExtension(transitiveDigestExtension),
-        digestSink.events.single.bytes);
+      buildStep.inputId.addExtension(transitiveDigestExtension),
+      digestSink.events.single.bytes,
+    );
   }
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-        '.dart': ['.dart$transitiveDigestExtension'],
-      };
+    '.dart': ['.dart$transitiveDigestExtension'],
+  };
 }

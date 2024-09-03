@@ -8,8 +8,10 @@ import 'package:build/build.dart';
 import 'package:path/path.dart' as p;
 import 'package:scratch_space/scratch_space.dart';
 
-final defaultAnalysisOptionsId =
-    AssetId('build_modules', 'lib/src/analysis_options.default.yaml');
+final defaultAnalysisOptionsId = AssetId(
+  'build_modules',
+  'lib/src/analysis_options.default.yaml',
+);
 
 final sdkDir = p.dirname(p.dirname(Platform.resolvedExecutable));
 
@@ -22,19 +24,28 @@ String get sdkDdcKernelPath =>
 /// Validates that [config] only has the top level keys [supportedOptions].
 ///
 /// Throws an [ArgumentError] if not.
-void validateOptions(Map<String, dynamic> config, List<String> supportedOptions,
-    String builderKey,
-    {List<String> deprecatedOptions = const []}) {
+void validateOptions(
+  Map<String, dynamic> config,
+  List<String> supportedOptions,
+  String builderKey, {
+  List<String> deprecatedOptions = const [],
+}) {
   var unsupported = config.keys.where(
-      (o) => !supportedOptions.contains(o) && !deprecatedOptions.contains(o));
+    (o) => !supportedOptions.contains(o) && !deprecatedOptions.contains(o),
+  );
   if (unsupported.isNotEmpty) {
-    throw ArgumentError.value(unsupported.join(', '), builderKey,
-        'only $supportedOptions are supported options, but got');
+    throw ArgumentError.value(
+      unsupported.join(', '),
+      builderKey,
+      'only $supportedOptions are supported options, but got',
+    );
   }
   var deprecated = config.keys.where(deprecatedOptions.contains);
   if (deprecated.isNotEmpty) {
-    log.warning('Found deprecated options ${deprecated.join(', ')}. These no '
-        'longer have any effect and should be removed.');
+    log.warning(
+      'Found deprecated options ${deprecated.join(', ')}. These no '
+      'longer have any effect and should be removed.',
+    );
   }
 }
 
@@ -50,9 +61,10 @@ List<String> fixSourceMapSources(List<String> uris) {
     var uri = Uri.parse(source);
     // We only want to rewrite multi-root scheme uris.
     if (uri.scheme.isEmpty) return source;
-    var newSegments = uri.pathSegments.first == 'packages'
-        ? uri.pathSegments
-        : uri.pathSegments.skip(1);
+    var newSegments =
+        uri.pathSegments.first == 'packages'
+            ? uri.pathSegments
+            : uri.pathSegments.skip(1);
     return Uri(path: p.url.joinAll(['/', ...newSegments])).toString();
   }).toList();
 }

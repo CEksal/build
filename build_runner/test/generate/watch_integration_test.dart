@@ -53,14 +53,15 @@ void main() {
       // Run a build and validate the output.
       process = await startDart('a', 'tool/build.dart');
 
-      stdOutLines = process.stdout
-          .transform(utf8.decoder)
-          .transform(const LineSplitter())
-          .asBroadcastStream();
+      stdOutLines =
+          process.stdout
+              .transform(utf8.decoder)
+              .transform(const LineSplitter())
+              .asBroadcastStream();
 
       await nextSuccessfulBuild;
       await d.dir('a', [
-        d.dir('web', [d.file('a.txt.copy', 'a')])
+        d.dir('web', [d.file('a.txt.copy', 'a')]),
       ]).validate();
     });
 
@@ -68,7 +69,7 @@ void main() {
       test('updates the process to quit', () async {
         // Append a newline to the build script!
         await d.dir('a', [
-          d.dir('tool', [d.file('build.dart', '$originalBuildContent\n')])
+          d.dir('tool', [d.file('build.dart', '$originalBuildContent\n')]),
         ]).create();
 
         await nextStdOutLine('Terminating builds due to build script update');
@@ -80,19 +81,19 @@ void main() {
       test('updates on changed source file', () async {
         await d.dir('a', [
           d.dir('output_dir', [
-            d.dir('web', [d.file('a.no_output', 'a')])
-          ])
+            d.dir('web', [d.file('a.no_output', 'a')]),
+          ]),
         ]).validate();
 
         await d.dir('a', [
-          d.dir('web', [d.file('a.no_output', 'changed')])
+          d.dir('web', [d.file('a.no_output', 'changed')]),
         ]).create();
         await nextSuccessfulBuild;
 
         await d.dir('a', [
           d.dir('output_dir', [
-            d.dir('web', [d.file('a.no_output', 'changed')])
-          ])
+            d.dir('web', [d.file('a.no_output', 'changed')]),
+          ]),
         ]).validate();
 
         process.kill();

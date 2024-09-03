@@ -46,7 +46,9 @@ void main() {
       await testBuilderAndCollectAssets(const ModuleLibraryBuilder(), assets);
       await testBuilderAndCollectAssets(MetaModuleBuilder(platform), assets);
       await testBuilderAndCollectAssets(
-          MetaModuleCleanBuilder(platform), assets);
+        MetaModuleCleanBuilder(platform),
+        assets,
+      );
       await testBuilderAndCollectAssets(ModuleBuilder(platform), assets);
     });
 
@@ -59,10 +61,13 @@ void main() {
         'a|web/index.dart.js.tar.gz': anything,
       };
       await testBuilder(
-          const WebEntrypointBuilder(WebCompiler.Dart2Js,
-              nativeNullAssertions: false),
-          assets,
-          outputs: expectedOutputs);
+        const WebEntrypointBuilder(
+          WebCompiler.Dart2Js,
+          nativeNullAssertions: false,
+        ),
+        assets,
+        outputs: expectedOutputs,
+      );
     });
 
     test('works with --no-sourcemap', () async {
@@ -71,10 +76,14 @@ void main() {
         'a|web/index.dart.js.tar.gz': anything,
       };
       await testBuilder(
-          const WebEntrypointBuilder(WebCompiler.Dart2Js,
-              dart2JsArgs: ['--no-source-maps'], nativeNullAssertions: false),
-          assets,
-          outputs: expectedOutputs);
+        const WebEntrypointBuilder(
+          WebCompiler.Dart2Js,
+          dart2JsArgs: ['--no-source-maps'],
+          nativeNullAssertions: false,
+        ),
+        assets,
+        outputs: expectedOutputs,
+      );
     });
   });
 
@@ -101,9 +110,12 @@ void main() {
       'a|lib/index.dart.js.tar.gz': anything,
     };
     await testBuilder(
-        const WebEntrypointBuilder(WebCompiler.Dart2Js,
-            nativeNullAssertions: false),
-        assets,
-        outputs: expectedOutputs);
+      const WebEntrypointBuilder(
+        WebCompiler.Dart2Js,
+        nativeNullAssertions: false,
+      ),
+      assets,
+      outputs: expectedOutputs,
+    );
   });
 }

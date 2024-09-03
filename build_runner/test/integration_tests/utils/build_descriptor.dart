@@ -25,7 +25,11 @@ class TestBuilderDefinition {
   final List<String> requiredInputs;
 
   TestBuilderDefinition(
-      this.key, this.isOptional, this.builder, this.requiredInputs);
+    this.key,
+    this.isOptional,
+    this.builder,
+    this.requiredInputs,
+  );
 }
 
 /// Define a builder with key [key] that can be assembled into a `build.dart` or
@@ -38,9 +42,12 @@ class TestBuilderDefinition {
 /// [requiredInputs] only has effect when using this builder with
 /// [packageWithBuilders]. In the [packageWithBuildScript] use case the ordering
 /// of the `builders` argument determines builder ordering.
-TestBuilderDefinition builder(String key, Builder builder,
-        {bool isOptional = false, List<String> requiredInputs = const []}) =>
-    TestBuilderDefinition(key, isOptional, builder, requiredInputs);
+TestBuilderDefinition builder(
+  String key,
+  Builder builder, {
+  bool isOptional = false,
+  List<String> requiredInputs = const [],
+}) => TestBuilderDefinition(key, isOptional, builder, requiredInputs);
 
 /// Create a package in [d.sandbox] with a `build.yaml` file exporting
 /// [builders] and auto applying them to dependents.
@@ -50,37 +57,42 @@ TestBuilderDefinition builder(String key, Builder builder,
 /// should contain top level fields with names matching they keys in [builders]
 /// and only rely on imports to `package:build_test/build_test.dart`.
 Future<d.Descriptor> packageWithBuilders(
-    Iterable<TestBuilderDefinition> builders,
-    {String name = 'provides_builders'}) async {
+  Iterable<TestBuilderDefinition> builders, {
+  String name = 'provides_builders',
+}) async {
   var frameCaller = Frame.caller().uri;
   return d.dir(name, [
-    await _pubspecWithDeps(name,
-        currentIsolateDependencies: ['build', 'build_test']),
+    await _pubspecWithDeps(name, currentIsolateDependencies: [
+      'build',
+      'build_test',
+    ]),
     d.file('build.yaml', jsonEncode(_buildConfig(builders))),
     d.dir('lib', [
       d.file(
-          'builders.dart',
-          _buildersFile(
-              builders, (await Isolate.resolvePackageUri(frameCaller))!))
-    ])
+        'builders.dart',
+        _buildersFile(
+          builders,
+          (await Isolate.resolvePackageUri(frameCaller))!,
+        ),
+      ),
+    ]),
   ]);
 }
 
 Map _buildConfig(Iterable<TestBuilderDefinition> builders) => {
-      'builders':
-          builders.map(_builderDefinition).reduce((a, b) => a..addAll(b))
-    };
+  'builders': builders.map(_builderDefinition).reduce((a, b) => a..addAll(b)),
+};
 
 Map _builderDefinition(TestBuilderDefinition builder) => {
-      builder.key: {
-        'import': 'package:provides_builders/builders.dart',
-        'builder_factories': ['${builder.key}Factory'],
-        'build_extensions': builder.builder.buildExtensions,
-        'auto_apply': 'dependents',
-        'is_optional': builder.isOptional,
-        'required_inputs': builder.requiredInputs,
-      }
-    };
+  builder.key: {
+    'import': 'package:provides_builders/builders.dart',
+    'builder_factories': ['${builder.key}Factory'],
+    'build_extensions': builder.builder.buildExtensions,
+    'auto_apply': 'dependents',
+    'is_optional': builder.isOptional,
+    'required_inputs': builder.requiredInputs,
+  },
+};
 
 /// Create a package in [d.sandbox] with dependencies on [otherPackages] set up
 /// to run their builders with `dart run build_runner`.
@@ -88,21 +100,27 @@ Map _builderDefinition(TestBuilderDefinition builder) => {
 /// The package name is always 'a'.
 ///
 /// Files other than the pubspec should be set up with [packageContents].
-Future<BuildTool> package(Iterable<d.Descriptor> otherPackages,
-    {Iterable<d.Descriptor> packageContents = const []}) async {
+Future<BuildTool> package(
+  Iterable<d.Descriptor> otherPackages, {
+  Iterable<d.Descriptor> packageContents = const [],
+}) async {
   await d.dir('a', <d.Descriptor>[
-    await _pubspecWithDeps('a', currentIsolateDependencies: [
-      'build',
-      'build_config',
-      'build_daemon',
-      'build_resolvers',
-      'build_runner',
-      'build_runner_core',
-      'code_builder',
-    ], pathDependencies: {
-      for (var o in otherPackages) o.name: p.join(d.sandbox, o.name),
-    }),
-    ...packageContents
+    await _pubspecWithDeps(
+      'a',
+      currentIsolateDependencies: [
+        'build',
+        'build_config',
+        'build_daemon',
+        'build_resolvers',
+        'build_runner',
+        'build_runner_core',
+        'code_builder',
+      ],
+      pathDependencies: {
+        for (var o in otherPackages) o.name: p.join(d.sandbox, o.name),
+      },
+    ),
+    ...packageContents,
   ]).create();
   await Future.wait(otherPackages.map((d) => d.create()));
   await pubGet('a');
@@ -122,8 +140,9 @@ Future<BuildTool> package(Iterable<d.Descriptor> otherPackages,
 /// Files other than `tool/build.dart` and the pubspec should be set up with
 /// [contents].
 Future<BuildTool> packageWithBuildScript(
-    Iterable<TestBuilderDefinition> builders,
-    {Iterable<d.Descriptor> contents = const []}) async {
+  Iterable<TestBuilderDefinition> builders, {
+  Iterable<d.Descriptor> contents = const [],
+}) async {
   var frameCaller = Frame.caller().uri;
   await d.dir('a', [
     await _pubspecWithDeps('a', currentIsolateDependencies: [
@@ -138,19 +157,23 @@ Future<BuildTool> packageWithBuildScript(
     ]),
     d.dir('tool', [
       d.file(
-          'build.dart',
-          _buildToolFile(
-              builders, (await Isolate.resolvePackageUri(frameCaller))!))
+        'build.dart',
+        _buildToolFile(
+          builders,
+          (await Isolate.resolvePackageUri(frameCaller))!,
+        ),
+      ),
     ]),
-    ...contents
+    ...contents,
   ]).create();
   await pubGet('a');
   return BuildTool._('dart', [p.join('tool', 'build.dart')]);
 }
 
 String _buildersFile(
-        Iterable<TestBuilderDefinition> builders, Uri callingScript) =>
-    '''
+  Iterable<TestBuilderDefinition> builders,
+  Uri callingScript,
+) => '''
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 
@@ -163,8 +186,9 @@ String _builderFactory(TestBuilderDefinition builder) =>
     'Builder ${builder.key}Factory(_) => ${builder.key};';
 
 String _buildToolFile(
-        Iterable<TestBuilderDefinition> builders, Uri callingScript) =>
-    '''
+  Iterable<TestBuilderDefinition> builders,
+  Uri callingScript,
+) => '''
 import 'dart:io';
 
 import 'package:build/build.dart';
@@ -189,8 +213,9 @@ apply('${builder.key}', [${builder.key}Factory], toRoot(),
 
 String _builders(Uri callingScript) {
   final content = File.fromUri(callingScript).readAsLinesSync();
-  final start =
-      content.indexWhere((l) => l.startsWith('// test-package-start'));
+  final start = content.indexWhere(
+    (l) => l.startsWith('// test-package-start'),
+  );
   final end = content.indexWhere((l) => l.contains('// test-package-end'));
   return content.sublist(start + 1, end).join('\n');
 }
@@ -206,19 +231,24 @@ String _builders(Uri callingScript) {
 ///
 /// If [versionDependencies] is provided then the keys are the package names
 /// and the values are the exact versions which will be added as a dependency.
-Future<d.FileDescriptor> _pubspecWithDeps(String name,
-    {Iterable<String> currentIsolateDependencies = const [],
-    Map<String, String> pathDependencies = const {},
-    Map<String, String> versionDependencies = const {}}) async {
-  var packageConfig =
-      await loadPackageConfigUri((await Isolate.packageConfig)!);
+Future<d.FileDescriptor> _pubspecWithDeps(
+  String name, {
+  Iterable<String> currentIsolateDependencies = const [],
+  Map<String, String> pathDependencies = const {},
+  Map<String, String> versionDependencies = const {},
+}) async {
+  var packageConfig = await loadPackageConfigUri(
+    (await Isolate.packageConfig)!,
+  );
   pathDependencies = Map.of(pathDependencies);
   await Future.forEach(currentIsolateDependencies, (String package) async {
     pathDependencies[package] = packageConfig[package]!.root.path;
   });
-  return _pubspec(name,
-      pathDependencies: pathDependencies,
-      versionDependencies: versionDependencies);
+  return _pubspec(
+    name,
+    pathDependencies: pathDependencies,
+    versionDependencies: versionDependencies,
+  );
 }
 
 /// Creates a `pubspec.yaml` file for package [name].
@@ -228,13 +258,16 @@ Future<d.FileDescriptor> _pubspecWithDeps(String name,
 ///
 /// If [versionDependencies] is provided then the keys are the package names
 /// and the values are the exact versions which will be added as a dependency.
-d.FileDescriptor _pubspec(String name,
-    {Map<String, String> pathDependencies = const {},
-    Map<String, String> versionDependencies = const {}}) {
-  var buffer = StringBuffer()
-    ..writeln('name: $name')
-    ..writeln('environment:')
-    ..writeln('  sdk: ^3.5.0-259.0.dev');
+d.FileDescriptor _pubspec(
+  String name, {
+  Map<String, String> pathDependencies = const {},
+  Map<String, String> versionDependencies = const {},
+}) {
+  var buffer =
+      StringBuffer()
+        ..writeln('name: $name')
+        ..writeln('environment:')
+        ..writeln('  sdk: ^3.5.0-259.0.dev');
 
   void writeDeps(String group) {
     buffer.writeln(group);
@@ -267,15 +300,22 @@ class BuildTool {
 
   BuildTool._(this._executable, this._baseArgs);
 
-  Future<BuildServer> serve() async =>
-      BuildServer(await TestProcess.start(_executable, [..._baseArgs, 'serve'],
-          workingDirectory: rootPackageDir));
+  Future<BuildServer> serve() async => BuildServer(
+    await TestProcess.start(_executable, [
+      ..._baseArgs,
+      'serve',
+    ], workingDirectory: rootPackageDir),
+  );
 
-  Future<StreamQueue<String>> build(
-      {List<String> args = const [], int expectExitCode = 0}) async {
-    var process = await TestProcess.start(
-        _executable, [..._baseArgs, 'build', ...args],
-        workingDirectory: rootPackageDir);
+  Future<StreamQueue<String>> build({
+    List<String> args = const [],
+    int expectExitCode = 0,
+  }) async {
+    var process = await TestProcess.start(_executable, [
+      ..._baseArgs,
+      'build',
+      ...args,
+    ], workingDirectory: rootPackageDir);
     await process.shouldExit(expectExitCode);
     return process.stdout;
   }
@@ -335,7 +375,9 @@ class BuildServer {
 /// Expect that [stdout] emits in order lines that contain every value in
 /// [expected] with any other lines in between.
 Future<void> expectOutput(
-    StreamQueue<String> stdout, Iterable<String> expected) async {
+  StreamQueue<String> stdout,
+  Iterable<String> expected,
+) async {
   for (final line in expected) {
     await expectLater(stdout, emitsThrough(contains(line)));
   }

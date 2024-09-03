@@ -34,10 +34,12 @@ void main() {
 
     test('reuses instances when a dispose can clean the state', () async {
       var last = 0;
-      var intResource = Resource(() => last++,
-          dispose: expectAsync1((int instance) {
-            expect(instance, last - 1);
-          }, max: -1));
+      var intResource = Resource(
+        () => last++,
+        dispose: expectAsync1((int instance) {
+          expect(instance, last - 1);
+        }, max: -1),
+      );
       var first = await resourceManager.fetch(intResource);
       expect(first, 0);
       await resourceManager.disposeAll();
@@ -67,13 +69,15 @@ void main() {
       var numDisposed = 0;
       final length = 10;
       var resources = List<Resource<int>>.generate(
-          length,
-          (i) => Resource(() => i, dispose: (instance) {
-                expect(instance, i);
-                numDisposed++;
-              }));
-      var values =
-          await Future.wait(resources.map((r) => resourceManager.fetch(r)));
+        length,
+        (i) => Resource(() => i, dispose: (instance) {
+          expect(instance, i);
+          numDisposed++;
+        }),
+      );
+      var values = await Future.wait(
+        resources.map((r) => resourceManager.fetch(r)),
+      );
       expect(values, List<int>.generate(length, (i) => i));
       await resourceManager.disposeAll();
       expect(numDisposed, length);

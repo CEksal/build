@@ -10,7 +10,7 @@ void main() {
   test('replaces file extensions', () {
     _expectOutputs(
       {
-        '.dart': ['.g.dart']
+        '.dart': ['.g.dart'],
       },
       _asset('lib/foo.dart'),
       [_asset('lib/foo.g.dart')],
@@ -20,7 +20,7 @@ void main() {
   test('^ matches only identical inputs', () {
     _expectOutputs(
       {
-        '^foo.txt': ['foo.txt.0']
+        '^foo.txt': ['foo.txt.0'],
       },
       _asset('foo.txt'),
       [_asset('foo.txt.0')],
@@ -28,7 +28,7 @@ void main() {
 
     _expectOutputs(
       {
-        '^foo.txt': ['foo.txt.0']
+        '^foo.txt': ['foo.txt.0'],
       },
       _asset('lib/foo.txt'),
       [],
@@ -38,10 +38,11 @@ void main() {
   test('outputs cannot be equal to inputs', () {
     expect(
       () => expectedOutputs(
-          TestBuilder(buildExtensions: {
-            'foo.txt': ['foo.txt']
-          }),
-          _asset('foo.txt')),
+        TestBuilder(buildExtensions: {
+          'foo.txt': ['foo.txt'],
+        }),
+        _asset('foo.txt'),
+      ),
       throwsArgumentError,
     );
   });
@@ -50,7 +51,7 @@ void main() {
     test('can match files in directory', () {
       _expectOutputs(
         {
-          'proto/{{}}.proto': ['lib/src/generated/{{}}.dart']
+          'proto/{{}}.proto': ['lib/src/generated/{{}}.dart'],
         },
         _asset('proto/service.proto'),
         [_asset('lib/src/generated/service.dart')],
@@ -60,7 +61,7 @@ void main() {
     test('can match files in subdirectories', () {
       _expectOutputs(
         {
-          'proto/{{}}.proto': ['lib/src/generated/{{}}.dart']
+          'proto/{{}}.proto': ['lib/src/generated/{{}}.dart'],
         },
         _asset('proto/services/auth.proto'),
         [_asset('lib/src/generated/services/auth.dart')],
@@ -70,15 +71,17 @@ void main() {
     test('must have unique names', () {
       expect(
         () => expectedOutputs(
-            TestBuilder(buildExtensions: {'{{}}/{{}}/foo.txt': []}),
-            _asset('foo.txt')),
+          TestBuilder(buildExtensions: {'{{}}/{{}}/foo.txt': []}),
+          _asset('foo.txt'),
+        ),
         throwsArgumentError,
       );
 
       expect(
         () => expectedOutputs(
-            TestBuilder(buildExtensions: {'{{x}}/{{x}}/foo.txt': []}),
-            _asset('foo.txt')),
+          TestBuilder(buildExtensions: {'{{x}}/{{x}}/foo.txt': []}),
+          _asset('foo.txt'),
+        ),
         throwsArgumentError,
       );
     });
@@ -87,7 +90,7 @@ void main() {
       expect(
         () => expectedOutputs(
           TestBuilder(buildExtensions: {
-            '{{}}.txt': ['invalid.txt']
+            '{{}}.txt': ['invalid.txt'],
           }),
           _asset('foo.txt'),
         ),
@@ -97,7 +100,7 @@ void main() {
       expect(
         () => expectedOutputs(
           TestBuilder(buildExtensions: {
-            '{{x}}/{{y}}.txt': ['{{x}}.txt']
+            '{{x}}/{{y}}.txt': ['{{x}}.txt'],
           }),
           _asset('foo.txt'),
         ),
@@ -109,7 +112,7 @@ void main() {
       expect(
         () => expectedOutputs(
           TestBuilder(buildExtensions: {
-            '{{}}.txt': ['{{}}/{{}}/.foo']
+            '{{}}.txt': ['{{}}/{{}}/.foo'],
           }),
           _asset('foo.txt'),
         ),
@@ -121,7 +124,7 @@ void main() {
       expect(
         () => expectedOutputs(
           TestBuilder(buildExtensions: {
-            '{{input}}.txt': ['{{output}}.foo']
+            '{{input}}.txt': ['{{output}}.foo'],
           }),
           _asset('foo.txt'),
         ),
@@ -131,7 +134,7 @@ void main() {
       expect(
         () => expectedOutputs(
           TestBuilder(buildExtensions: {
-            '.txt': ['{{output}}.foo']
+            '.txt': ['{{output}}.foo'],
           }),
           _asset('foo.txt'),
         ),
@@ -141,18 +144,19 @@ void main() {
 
     test('can use `^` to start at the beginning', () {
       const extensions = {
-        '^lib/{{}}.dart': ['lib/generated/{{}}.dart']
+        '^lib/{{}}.dart': ['lib/generated/{{}}.dart'],
       };
 
-      _expectOutputs(extensions, _asset('lib/foo.dart'),
-          [_asset('lib/generated/foo.dart')]);
+      _expectOutputs(extensions, _asset('lib/foo.dart'), [
+        _asset('lib/generated/foo.dart'),
+      ]);
       _expectOutputs(extensions, _asset('web/nested/lib/foo.dart'), isEmpty);
     });
 
     test('can be used at the start of an input', () {
       _expectOutputs(
         {
-          '{{}}.proto': ['lib/src/{{}}.dart']
+          '{{}}.proto': ['lib/src/{{}}.dart'],
         },
         _asset('proto/services/auth.proto'),
         [_asset('lib/src/proto/services/auth.dart')],
@@ -162,7 +166,7 @@ void main() {
     test('match greedily', () {
       _expectOutputs(
         {
-          'lib/{{}}.dart': ['docs/{{}}.md']
+          'lib/{{}}.dart': ['docs/{{}}.md'],
         },
         // The input extension should match the outer "lib/"
         _asset('lib/src/lib/foo.dart'),
@@ -173,7 +177,7 @@ void main() {
     test('can use multiple capture groups', () {
       _expectOutputs(
         {
-          '{{dir}}/{{file}}.dart': ['{{dir}}/generated/{{file}}.g.dart']
+          '{{dir}}/{{file}}.dart': ['{{dir}}/generated/{{file}}.g.dart'],
         },
         _asset('somewhat/nested/input/directory/with/file.dart'),
         [_asset('somewhat/nested/input/directory/with/generated/file.g.dart')],
@@ -183,7 +187,7 @@ void main() {
     test('can be used at the end of an input', () {
       _expectOutputs(
         {
-          'lib/{{}}': ['lib/copied/{{}}']
+          'lib/{{}}': ['lib/copied/{{}}'],
         },
         _asset('lib/src/foo.dart'),
         [_asset('lib/copied/src/foo.dart')],
@@ -193,9 +197,14 @@ void main() {
 }
 
 void _expectOutputs(
-    Map<String, List<String>> extensions, AssetId input, Object? expected) {
-  expect(expectedOutputs(TestBuilder(buildExtensions: extensions), input),
-      expected);
+  Map<String, List<String>> extensions,
+  AssetId input,
+  Object? expected,
+) {
+  expect(
+    expectedOutputs(TestBuilder(buildExtensions: extensions), input),
+    expected,
+  );
 }
 
 AssetId _asset(String path) => AssetId('a', path);

@@ -30,17 +30,16 @@ void main() {
           'build_test',
           'code_builder',
         ]),
-        d.dir('lib', [
-          d.file('example.dart', "String hello = 'hello'"),
-        ]),
+        d.dir('lib', [d.file('example.dart', "String hello = 'hello'")]),
       ]).create();
 
       await pubGet('a');
       pubProcess = await startPub('a', 'run', args: ['build_runner', 'serve']);
-      pubStdOutLines = pubProcess.stdout
-          .transform(const Utf8Decoder())
-          .transform(const LineSplitter())
-          .asBroadcastStream();
+      pubStdOutLines =
+          pubProcess.stdout
+              .transform(const Utf8Decoder())
+              .transform(const LineSplitter())
+              .asBroadcastStream();
     });
 
     tearDown(() async {
@@ -49,9 +48,11 @@ void main() {
     });
 
     test('warns if it didnt find a directory to serve', () async {
-      expect(pubStdOutLines,
-          emitsThrough(contains('Found no known web directories to serve')),
-          reason: 'never saw the warning');
+      expect(
+        pubStdOutLines,
+        emitsThrough(contains('Found no known web directories to serve')),
+        reason: 'never saw the warning',
+      );
     });
   });
 }

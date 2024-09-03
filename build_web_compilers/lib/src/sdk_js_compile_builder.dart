@@ -49,24 +49,31 @@ class SdkJsCompileBuilder implements Builder {
     String? librariesPath,
     String? platformSdk,
     required this.canaryFeatures,
-  })  : platformSdk = platformSdk ?? sdkDir,
-        librariesPath = librariesPath ??
-            p.join(platformSdk ?? sdkDir, 'lib', 'libraries.json'),
-        buildExtensions = {
-          r'$package$': [
-            outputPath,
-            p.setExtension(outputPath, _jsSourceMapExtension),
-          ],
-        },
-        jsOutputId = AssetId('build_web_compilers', outputPath);
+  }) : platformSdk = platformSdk ?? sdkDir,
+       librariesPath =
+           librariesPath ??
+           p.join(platformSdk ?? sdkDir, 'lib', 'libraries.json'),
+       buildExtensions = {
+         r'$package$': [
+           outputPath,
+           p.setExtension(outputPath, _jsSourceMapExtension),
+         ],
+       },
+       jsOutputId = AssetId('build_web_compilers', outputPath);
 
   @override
   final Map<String, List<String>> buildExtensions;
 
   @override
   Future build(BuildStep buildStep) async {
-    await _createDevCompilerModule(buildStep, platformSdk, sdkKernelPath,
-        librariesPath, jsOutputId, canaryFeatures);
+    await _createDevCompilerModule(
+      buildStep,
+      platformSdk,
+      sdkKernelPath,
+      librariesPath,
+      jsOutputId,
+      canaryFeatures,
+    );
   }
 }
 

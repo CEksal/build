@@ -41,9 +41,9 @@ builders:
         var result = await runPub('a', 'run', args: ['build_runner', 'build']);
         expect(result.stderr, isEmpty);
         expect(
-            result.stdout,
-            contains(
-                'The `../` import syntax in build.yaml is now deprecated'));
+          result.stdout,
+          contains('The `../` import syntax in build.yaml is now deprecated'),
+        );
       });
 
       test('support package relative imports', () async {
@@ -60,19 +60,23 @@ builders:
         var result = await runPub('a', 'run', args: ['build_runner', 'build']);
         expect(result.stderr, isEmpty);
         expect(
-            result.stdout,
-            isNot(contains(
-                'The `../` import syntax in build.yaml is now deprecated')));
+          result.stdout,
+          isNot(
+            contains('The `../` import syntax in build.yaml is now deprecated'),
+          ),
+        );
 
         await d.dir('a', [
           d.dir('.dart_tool', [
             d.dir('build', [
               d.dir('entrypoint', [
-                d.file('build.dart',
-                    contains("import '../../../tool/builder.dart'"))
-              ])
-            ])
-          ])
+                d.file(
+                  'build.dart',
+                  contains("import '../../../tool/builder.dart'"),
+                ),
+              ]),
+            ]),
+          ]),
         ]).validate();
       });
 
@@ -84,7 +88,7 @@ builders:
     import: "tool/builder.dart"
     builder_factories: ["not an identifier"]
     build_extensions: {"foo": ["bar"]}
-''')
+'''),
         ]).create();
         var result = await runPub('a', 'run', args: ['build_runner', 'build']);
         expect(result.stderr, isEmpty);
@@ -99,14 +103,17 @@ builders:
     import: "package:unknown_package/import.dart"
     builder_factories: ["myFactory"]
     build_extensions: {"foo": ["bar"]}
-''')
+'''),
         ]).create();
         var result = await runPub('a', 'run', args: ['build_runner', 'build']);
         expect(result.stderr, isEmpty);
         expect(
-            result.stdout,
-            contains('Could not load imported package "unknown_package" '
-                'for definition "a:fake".'));
+          result.stdout,
+          contains(
+            'Could not load imported package "unknown_package" '
+            'for definition "a:fake".',
+          ),
+        );
       });
     });
 
@@ -123,15 +130,18 @@ global_options:
       var result = await runPub('a', 'run', args: ['build_runner', 'build']);
       expect(result.stderr, isEmpty);
       expect(
-          result.stdout,
-          allOf(
-            contains(
-                'Invalid builder key `a:a` found in global_options config of '
-                'build.yaml. This configuration will have no effect.'),
-            contains(
-                'Invalid builder key `b:b` found in global_options config of '
-                'build.yaml. This configuration will have no effect.'),
-          ));
+        result.stdout,
+        allOf(
+          contains(
+            'Invalid builder key `a:a` found in global_options config of '
+            'build.yaml. This configuration will have no effect.',
+          ),
+          contains(
+            'Invalid builder key `b:b` found in global_options config of '
+            'build.yaml. This configuration will have no effect.',
+          ),
+        ),
+      );
     });
   });
 }

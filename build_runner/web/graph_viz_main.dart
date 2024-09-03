@@ -16,8 +16,10 @@ void main() async {
   var searchForm = document.getElementById('searchform')!;
   searchForm.onSubmit.listen((e) {
     e.preventDefault();
-    _focus(searchBox.value!.trim(),
-        filter: filterBox.value!.isNotEmpty ? filterBox.value : null);
+    _focus(
+      searchBox.value!.trim(),
+      filter: filterBox.value!.isNotEmpty ? filterBox.value : null,
+    );
   });
   _graphReference.callMethod('initializeGraph', [_focus]);
 }
@@ -38,8 +40,9 @@ Future _focus(String query, {String? filter}) async {
   if (filter != null) queryParams['f'] = filter;
   var uri = Uri(queryParameters: queryParams);
   try {
-    nodeInfo = json.decode(await HttpRequest.getString(uri.toString()))
-        as Map<String, dynamic>;
+    nodeInfo =
+        json.decode(await HttpRequest.getString(uri.toString()))
+            as Map<String, dynamic>;
   } catch (e, stack) {
     var msg = 'Error requesting query "$query".';
     if (e is ProgressEvent) {
@@ -48,7 +51,7 @@ Future _focus(String query, {String? filter}) async {
         msg = [
           msg,
           '${target.status} ${target.statusText}',
-          target.responseText
+          target.responseText,
         ].join('\n');
       }
       _error(msg);
@@ -61,7 +64,8 @@ Future _focus(String query, {String? filter}) async {
   var graphData = {'edges': nodeInfo['edges'], 'nodes': nodeInfo['nodes']};
   _graphReference.callMethod('setData', [js.JsObject.jsify(graphData)]);
   var primaryNode = nodeInfo['primary'] as Map<String, Object?>;
-  _details.innerHtml = '<strong>ID:</strong> ${primaryNode['id']} <br />'
+  _details.innerHtml =
+      '<strong>ID:</strong> ${primaryNode['id']} <br />'
       '<strong>Type:</strong> ${primaryNode['type']}<br />'
       '<strong>Hidden:</strong> ${primaryNode['hidden']} <br />'
       '<strong>State:</strong> ${primaryNode['state']} <br />'

@@ -34,27 +34,17 @@ final _builders = <_i1.BuilderApplication>[
   ),
   _i1.apply(
     r'build_web_compilers:sdk_js',
-    [
-      _i3.sdkJsCompile,
-      _i3.sdkJsCopyRequirejs,
-    ],
+    [_i3.sdkJsCompile, _i3.sdkJsCopyRequirejs],
     _i1.toNoneByDefault(),
     isOptional: true,
     hideOutput: true,
   ),
   _i1.apply(
     r'build_test:test_bootstrap',
-    [
-      _i4.debugIndexBuilder,
-      _i4.debugTestBuilder,
-      _i4.testBootstrapBuilder,
-    ],
+    [_i4.debugIndexBuilder, _i4.debugTestBuilder, _i4.testBootstrapBuilder],
     _i1.toRoot(),
     hideOutput: true,
-    defaultGenerateFor: const _i5.InputSet(include: [
-      r'$package$',
-      r'test/**',
-    ]),
+    defaultGenerateFor: const _i5.InputSet(include: [r'$package$', r'test/**']),
   ),
   _i1.apply(
     r'build_modules:module_library',
@@ -78,10 +68,7 @@ final _builders = <_i1.BuilderApplication>[
   ),
   _i1.apply(
     r'build_web_compilers:ddc',
-    [
-      _i3.ddcKernelBuilder,
-      _i3.ddcBuilder,
-    ],
+    [_i3.ddcKernelBuilder, _i3.ddcBuilder],
     _i1.toAllPackages(),
     isOptional: true,
     hideOutput: true,
@@ -115,19 +102,17 @@ final _builders = <_i1.BuilderApplication>[
         r'example/**',
         r'benchmark/**',
       ],
-      exclude: [
-        r'test/**.node_test.dart',
-        r'test/**.vm_test.dart',
-      ],
+      exclude: [r'test/**.node_test.dart', r'test/**.vm_test.dart'],
     ),
     defaultOptions: const _i7.BuilderOptions(<String, dynamic>{
-      r'dart2js_args': <dynamic>[r'--minify']
+      r'dart2js_args': <dynamic>[r'--minify'],
     }),
     defaultDevOptions: const _i7.BuilderOptions(<String, dynamic>{
-      r'dart2js_args': <dynamic>[r'--enable-asserts']
+      r'dart2js_args': <dynamic>[r'--enable-asserts'],
     }),
-    defaultReleaseOptions:
-        const _i7.BuilderOptions(<String, dynamic>{r'compiler': r'dart2js'}),
+    defaultReleaseOptions: const _i7.BuilderOptions(<String, dynamic>{
+      r'compiler': r'dart2js',
+    }),
     appliesBuilders: const [r'build_web_compilers:dart2js_archive_extractor'],
   ),
   _i1.apply(
@@ -138,10 +123,7 @@ final _builders = <_i1.BuilderApplication>[
     hideOutput: true,
     appliesBuilders: const [r'build_resolvers:transitive_digest_cleanup'],
   ),
-  _i1.applyPostProcess(
-    r'build_modules:module_cleanup',
-    _i6.moduleCleanup,
-  ),
+  _i1.applyPostProcess(r'build_modules:module_cleanup', _i6.moduleCleanup),
   _i1.applyPostProcess(
     r'build_resolvers:transitive_digest_cleanup',
     _i8.transitiveDigestCleanup,
@@ -149,28 +131,24 @@ final _builders = <_i1.BuilderApplication>[
   _i1.applyPostProcess(
     r'build_web_compilers:dart2js_archive_extractor',
     _i3.dart2jsArchiveExtractor,
-    defaultReleaseOptions:
-        const _i7.BuilderOptions(<String, dynamic>{r'filter_outputs': true}),
+    defaultReleaseOptions: const _i7.BuilderOptions(<String, dynamic>{
+      r'filter_outputs': true,
+    }),
   ),
   _i1.applyPostProcess(
     r'build_web_compilers:dart_source_cleanup',
     _i3.dartSourceCleanup,
-    defaultReleaseOptions:
-        const _i7.BuilderOptions(<String, dynamic>{r'enabled': true}),
+    defaultReleaseOptions: const _i7.BuilderOptions(<String, dynamic>{
+      r'enabled': true,
+    }),
   ),
   _i1.applyPostProcess(
     r'provides_builder:some_post_process_builder',
     _i2.somePostProcessBuilder,
   ),
 ];
-void main(
-  List<String> args, [
-  _i9.SendPort? sendPort,
-]) async {
-  var result = await _i10.run(
-    args,
-    _builders,
-  );
+void main(List<String> args, [_i9.SendPort? sendPort]) async {
+  var result = await _i10.run(args, _builders);
   sendPort?.send(result);
   _i11.exitCode = result;
 }

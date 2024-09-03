@@ -22,12 +22,10 @@ void main() {
           'build_runner_core',
           'build_test',
           'code_builder',
-          'glob'
+          'glob',
         ]),
         d.dir('tool', [d.file('build.dart', buildFile)]),
-        d.dir('web', [
-          d.file('a.txt', 'a'),
-        ]),
+        d.dir('web', [d.file('a.txt', 'a')]),
       ]).create();
 
       await pubGet('a');
@@ -36,12 +34,8 @@ void main() {
       var buildResult = await runDart('a', 'tool/build.dart', args: ['build']);
       expect(buildResult.exitCode, 0);
       await d.dir('a', [
-        d.dir('web', [
-          d.file('a.txt.copy', 'a'),
-        ]),
-        d.dir('.dart_tool', [
-          d.dir('build'),
-        ]),
+        d.dir('web', [d.file('a.txt.copy', 'a')]),
+        d.dir('.dart_tool', [d.dir('build')]),
       ]).validate();
     });
 
@@ -49,12 +43,8 @@ void main() {
       var cleanResult = await runDart('a', 'tool/build.dart', args: ['clean']);
       expect(cleanResult.exitCode, 0);
       await d.dir('a', [
-        d.dir('web', [
-          d.nothing('a.txt.copy'),
-        ]),
-        d.dir('.dart_tool', [
-          d.nothing('build'),
-        ]),
+        d.dir('web', [d.nothing('a.txt.copy')]),
+        d.dir('.dart_tool', [d.nothing('build')]),
       ]).validate();
     });
   });
