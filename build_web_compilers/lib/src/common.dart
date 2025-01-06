@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:build/build.dart';
@@ -47,26 +46,8 @@ void validateOptions(Map<String, dynamic> config, List<String> supportedOptions,
 /// - Strips the top level directory if its not `packages`
 Future<void> fixAndCopySourceMap(
     AssetId id, ScratchSpace scratchSpace, AssetWriter writer) async {
-  // Copied to `web/stack_trace_mapper.dart`, these need to be kept in sync.
-  String fixMappedSource(String source) {
-    var uri = Uri.parse(source);
-    // We only want to rewrite multi-root scheme uris.
-    if (uri.scheme.isEmpty) return source;
-    var newSegments = uri.pathSegments.first == 'packages'
-        ? uri.pathSegments
-        : uri.pathSegments.skip(1);
-    return Uri(path: p.url.joinAll(['/', ...newSegments])).toString();
-  }
-
   var file = scratchSpace.fileFor(id);
   if (await file.exists()) {
-    var content = await file.readAsString();
-    var json = jsonDecode(content) as Map<String, Object?>;
-    var sources = json['sources'] as List<Object?>;
-    // Modify `sources` in place for fewer allocations.
-    for (var i = 0; i < sources.length; i++) {
-      sources[i] = fixMappedSource(sources[i] as String);
-    }
-    await writer.writeAsString(id, jsonEncode(json));
+    await writer.writeAsString(id, await file.readAsString());
   }
 }
